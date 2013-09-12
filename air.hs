@@ -1,4 +1,5 @@
 import System.Random
+import GHC.Float
 
 main = putStrLn "test"
 
@@ -19,19 +20,22 @@ queueAdd :: Ord b => (a -> b) -> a-> [a] -> [a]
 queueAdd f x q = quickSort f (x : q)
 
 
-prng :: Int->(Int,Int) -> [Int]
+prng :: Random g=>Int->(g,g) -> [g]
 prng seed (a,b) =  randomRs (a, b) . mkStdGen $ seed
 
 rintToDouble :: Int -> Double
 rintToDouble x = (fromIntegral x) *(1.0/4294967296.0)
 
-uniform :: Int -> [(Double,Double)]
-uniform seed = [(x,y) | (x,y) <- (unify xs ys),
-                (x*x)+(y*y)<1]
+--Box-Muller method
+uniform :: Int -> [Float]
+uniform seed = map (\(a,b)->a*b) $ zip (map (\(a,b)-> a) xys) ds
                where
-                 xs = map rintToDouble (prng seed (minBound::Int,maxBound::Int))
-                 ys = map rintToDouble (prng (seed+1) (minBound::Int,maxBound::Int))
-                 unify (a:as) (b:bs) = (a,b) : unify as bs
+                 xs = prng seed (-1.0,1.0)
+                 ys = prng seed (-1.0,1.0)
+                 xys = [(x,y) | (x,y) <- (zip xs ys), (x*x)+(y*y)<1]
+                 rs = map (\(a,b)->(a*a)+(b*b)) xys
+                 ds = map sqrt (map (\x -> -2.0*x) (map (\(a,b)->a/b) $ zip (map log rs) rs))
+                 
 
 
 --Random A/C
