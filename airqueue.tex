@@ -1,0 +1,66 @@
+\documentclass[titlepage]{article}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage[hmargin=0.5in,vmargin=0.7in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{fancyhdr}
+\usepackage{tikz-qtree}
+
+
+\def\crv{\cr\noalign{\vskip7pt}} 
+\def\a{\alpha } \def\b{\beta } \def\d{\delta } \def\D{\Delta } \def\e{\epsilon }
+\def\g{\gamma } \def\G{\Gamma} \def\k{\kappa} \def\l{\lambda } \def\L{\Lambda }
+\def\th{\theta } \def\Th{\Theta} \def\r{\rho} \def\o{\omega} \def\O{\Omega}
+\def\ve{\varepsilon} 
+ \newcommand{\bc}{\begin{center}}
+ \newcommand{\ec}{\end{center}}
+
+\numberwithin{equation}{section}
+
+\begin{document}
+
+
+
+\pagestyle{fancyplain}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\newcommand{\cond}{\text{cond}}
+\newcommand{\emach}{\epsilon_{mach}}
+\newcommand{\mbf}{\mathbf}
+\newcommand{\w}{\omega}
+\newcommand{\hr}{\rule[.5ex]{3.5em}{0.4pt}}
+\newcommand{\mytitle}{Airplane Queue Problem}
+\newcommand{\myauthor}{Andrey A Popov}
+
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+
+\newsavebox{\smlmat}
+\savebox{\smlmat}{$\begin{bmatrix}0&1\end{bmatrix}^T$}
+
+
+\allowdisplaybreaks[1]
+
+\title{\mytitle}
+\author{\myauthor}
+\date{\today}
+\maketitle
+
+\lhead{\fancyplain{}{\rightmark }}
+\rhead{\myauthor}
+\chead{\mytitle}
+
+\newpage
+
+
+\section{Test}
+
+
+\end{document}
