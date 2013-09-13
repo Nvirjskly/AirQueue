@@ -11,7 +11,7 @@
 \usepackage{longtable}
 \usepackage[toc,page]{appendix}
 \usepackage{url}
-\usepackage{tocbibind}
+%\usepackage[notlot,notlof]{tocbibind}
 
 
 \def\crv{\cr\noalign{\vskip7pt}} 
@@ -63,8 +63,8 @@
 \chead{\mytitle}
 
 \tableofcontents
-%\listoffigures
-%\listoftables
+\listoffigures
+\listoftables
 \newpage
 
 
@@ -79,7 +79,7 @@ some stuff\cite{USDoTData}
 \DTLloaddb[]{USaug20102Ohare}{USaug20102Ohare.csv}
 
 \DTLdisplaylongdb[%
-caption={US Department of Transportation Data},%
+caption={US Department of Transportation US Airways August 2012 Chicago O'Hare Data},%
 label={tab:flightdata},%
 contcaption={Flight Data (continued)},%
 foot={\em Continued overleaf},%
@@ -89,6 +89,7 @@ lastfoot={}%
 \end{appendices}
 
 \newpage
+\addcontentsline{toc}{section}{References}
 \bibliographystyle{plain}
 \bibliography{air}
 

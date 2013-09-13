@@ -1,5 +1,6 @@
 import System.Random
 import GHC.Float
+import Text.Printf
 
 main = putStrLn "test"
 
@@ -38,8 +39,7 @@ randPass :: Int -> Int -> Int -> Passenger
 randPass scht seed n = Passenger {haveConnection = (ttf!!n)==0,
                              connectionTime = scht+120+(floor (15*(uniform seed !! n)))}
                   where
-                    ttf :: [Int]
-                    ttf = prng seed (0,9)
+                    ttf = prng seed (0::Int,9)
 
 
 
@@ -54,7 +54,7 @@ randAC seed n = AirCraft {aType = maxPass,
                 where
                   maxPass = 50 + (50 * ((prng seed (1,7))!! n))
                   randNumPass = prng seed (10,maxPass) !! n
-                  randTime = prng seed (0,1440) !! n
+                  randTime = prng seed (180,1260) !! n
                   stdDepart = 67.51416 --Standard Deviation of departure
 
 si :: Int -> Int
@@ -64,6 +64,13 @@ test :: [Int]
 test = [7, 6, 4, 1, 2, 10, 11]
 
 testair ac1 = ac1.numPass
+
+toTime :: Int -> String
+toTime t = concat [(printf "%02d" hour),":",(printf "%02d" minute)]
+  where
+    minute = mod t 60
+    hour = quot (t-minute) 60
+  
 
 --quickSort
 --cf: comparison function
