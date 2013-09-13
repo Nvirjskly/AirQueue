@@ -7,6 +7,11 @@
 \usepackage{amsthm}
 \usepackage{fancyhdr}
 \usepackage{tikz-qtree}
+\usepackage{datatool}
+\usepackage{longtable}
+\usepackage[toc,page]{appendix}
+\usepackage{url}
+\usepackage{tocbibind}
 
 
 \def\crv{\cr\noalign{\vskip7pt}} 
@@ -57,10 +62,34 @@
 \rhead{\myauthor}
 \chead{\mytitle}
 
+\tableofcontents
+%\listoffigures
+%\listoftables
 \newpage
 
 
 \section{Test}
+some stuff\cite{USDoTData}
 
+\newpage
+\begin{appendices}
+\section{US DoT Data}
+
+\DTLsetseparator{,}
+\DTLloaddb[]{USaug20102Ohare}{USaug20102Ohare.csv}
+
+\DTLdisplaylongdb[%
+caption={US Department of Transportation Data},%
+label={tab:flightdata},%
+contcaption={Flight Data (continued)},%
+foot={\em Continued overleaf},%
+lastfoot={}%
+]{USaug20102Ohare}
+
+\end{appendices}
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{air}
 
 \end{document}
