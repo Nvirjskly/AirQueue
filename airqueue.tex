@@ -11,6 +11,8 @@
 \usepackage{longtable}
 \usepackage[toc,page]{appendix}
 \usepackage{url}
+\usepackage{haskell}
+\usepackage{listings}
 %\usepackage[notlot,notlof]{tocbibind}
 
 
@@ -26,7 +28,7 @@
 
 \begin{document}
 
-
+\lstset{language=Haskell,numbers=left,literate={->}{$\rightarrow$}1 {<-}{$\leftarrow$}1{=>}{$\Rightarrow$}1{\\}{$\l$}1}
 
 \pagestyle{fancyplain}
 
@@ -65,11 +67,19 @@
 \tableofcontents
 \listoffigures
 \listoftables
+\lstlistoflistings
 \newpage
 
 
-\section{Test}
-some stuff\cite{USDoTData}
+\begin{abstract}
+In the context of Aircraft queuing, we---using a simulation---optimise for several factors such as customer satisfaction and schedule conformance. 
+\end{abstract}
+
+\section{Statement of Problem}
+The problem consists of constructing an optimal queuing algorithm for aircraft given an airport and a set of conditions
+
+\section{Constructing of simulation}
+Using data obtained from the US Department of Transportation \cite{USDoTData} we try and construct a simulation that conforms as closely as possible to it.
 
 \newpage
 \begin{appendices}
@@ -85,6 +95,10 @@ contcaption={Flight Data (continued)},%
 foot={\em Continued overleaf},%
 lastfoot={}%
 ]{USaug20102Ohare}
+
+\newpage
+\section{Code}
+\lstinputlisting[caption={air.hs}]{air.hs}
 
 \end{appendices}
 

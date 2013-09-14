@@ -1,7 +1,4 @@
 import System.Random
-import Text.Printf
-
-main = putStrLn "test"
 
 data Passenger = Passenger {haveConnection :: Bool,
                             connectionTime :: Int} deriving(Show)
@@ -14,12 +11,7 @@ data AirCraft = AirCraft {aType :: Int,
                           numPass :: Int,
                           passengers :: [Passenger],
                           arrivalTime :: Int} deriving(Show)
-
-queueAdd :: Ord b => (a -> b) -> a-> [a] -> [a]
-
-queueAdd f x q = quickSort f (x : q)
-
-
+						  
 prng :: Random g => Int -> (g,g) -> [g]
 prng seed (a,b) =  randomRs (a, b) . mkStdGen $ seed
 
@@ -32,15 +24,11 @@ uniform seed = map (\(a,b)->a*b) $ zip (map (\(a,b)-> a) xys) ds
                  xys = [(x,y) | (x,y) <- (zip xs ys), (x*x)+(y*y)<1]
                  rs = map (\(a,b)->(a*a)+(b*b)) xys
                  ds = map sqrt $ map (\x -> -2.0*x) $ map (\(a,b)->a/b) $ zip (map log rs) rs
-
+				 
 --Random Passenger
 randPass :: Int -> Int -> Int -> Passenger
-randPass scht seed n = Passenger {haveConnection = (ttf!!n)==0,
+randPass scht seed n = Passenger {haveConnection = (prng seed (0::Int,9)!!n)==0,
                              connectionTime = scht+120+(floor (15*(uniform seed !! n)))}
-                  where
-                    ttf = prng seed (0::Int,9)
-
-
 
 --Random A/C
 randAC :: Int -> Int -> AirCraft
@@ -57,30 +45,9 @@ randAC seed n = AirCraft {aType = maxPass,
                   stdDepart = 25.5200688 --Standard Deviation of departure
                   meanDepart = -4.932468
                   randPassengers = map (\x->randPass randTime seed x) [1..]
-
-
-si :: Int -> Int
-si x = x
-
-test :: [Int]
-test = [7, 6, 4, 1, 2, 10, 11]
-
-testair ac1 = ac1.numPass
-
+				  
 toTime :: Int -> String
 toTime t = concat [(printf "%02d" hour),":",(printf "%02d" minute)]
   where
     minute = mod t 60
     hour = quot (t-minute) 60
-  
-
---quickSort
---cf: comparison function
---xs: list
-quickSort :: Ord b => (a -> b) -> [a] -> [a]
-quickSort cf [] = []
-quickSort cf (p:xs) = quickSort cf [x | x<-xs, (cf x)< (cf p)] ++ [p] ++
-                      quickSort cf [x | x<-xs, (cf x)>=(cf p)]
-
-
-
