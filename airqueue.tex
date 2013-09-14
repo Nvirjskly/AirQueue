@@ -13,6 +13,7 @@
 \usepackage{url}
 \usepackage{haskell}
 \usepackage{listings}
+\usepackage{placeins}
 %\usepackage[notlot,notlof]{tocbibind}
 
 
@@ -28,7 +29,7 @@
 
 \begin{document}
 
-\lstset{language=Haskell,numbers=left,literate={->}{$\rightarrow$}1 {<-}{$\leftarrow$}1{=>}{$\Rightarrow$}1{\\}{$\l$}1}
+\lstset{language=Haskell,numbers=left,literate={->}{$\rightarrow$}1 {<-}{$\leftarrow$}1{=>}{$\Rightarrow$}1{(\\}{($\l$}2{*}{$\cdot$}1}
 
 \pagestyle{fancyplain}
 
@@ -81,12 +82,25 @@ The problem consists of constructing an optimal queuing algorithm for aircraft g
 \section{Constructing of simulation}
 Using data obtained from the US Department of Transportation \cite{USDoTData} we try and construct a simulation that conforms as closely as possible to it.
 
+Using blah blah we get the following sample database:
+
+\FloatBarrier
+
+\DTLloaddb[]{aircraftdb}{aircraftdb.csv}
+\begin{table}
+\caption{Sample database of 25 values with passengers omitted due to space constraints}
+\label{tab:sampledata}
+\centering
+\DTLdisplaydb[]{aircraftdb}
+\end{table}
+
+
 \newpage
 \begin{appendices}
 \section{US DoT Data}
 
 \DTLsetseparator{,}
-\DTLloaddb[]{USaug20102Ohare}{USaug20102Ohare.csv}
+\DTLloaddb[]{USaug2012Ohare}{USaug2012Ohare.csv}
 
 \DTLdisplaylongdb[%
 caption={US Department of Transportation US Airways August 2012 Chicago O'Hare Data},%
@@ -94,11 +108,11 @@ label={tab:flightdata},%
 contcaption={Flight Data (continued)},%
 foot={\em Continued overleaf},%
 lastfoot={}%
-]{USaug20102Ohare}
+]{USaug2012Ohare}
 
 \newpage
 \section{Code}
-\lstinputlisting[caption={air.hs}]{air.hs}
+\lstinputlisting[caption={dbsimulation.hs}]{dbsimulation.hs}
 
 \end{appendices}
 

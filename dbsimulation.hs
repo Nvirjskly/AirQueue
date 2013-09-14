@@ -1,4 +1,6 @@
 import System.Random
+import System.Environment
+import Text.Printf
 
 data Passenger = Passenger {haveConnection :: Bool,
                             connectionTime :: Int} deriving(Show)
@@ -44,10 +46,33 @@ randAC seed n = AirCraft {aType = maxPass,
                   randTime = prng seed (180,1260) !! n
                   stdDepart = 25.5200688 --Standard Deviation of departure
                   meanDepart = -4.932468
-                  randPassengers = map (\x->randPass randTime seed x) [1..]
-				  
+                  randPassengers = map (\x->randPass randTime seed x) [0..]
+
+randACs seed = map (randAC seed) [1..]
+
 toTime :: Int -> String
 toTime t = concat [(printf "%02d" hour),":",(printf "%02d" minute)]
   where
     minute = mod t 60
     hour = quot (t-minute) 60
+
+acToDB :: AirCraft -> String
+acToDB AirCraft {aType=ac1,scheduleTime=ac2,
+                 actualTime=ac3,numPass=ac4,
+                 passengers=ac5,arrivalTime=ac6}
+  =  concat [show ac1,",",toTime ac2,",",
+             toTime ac3,",",show ac4,",","...,",toTime ac6]
+
+acsToDB :: [AirCraft] -> String
+acsToDB (ac:acs) = foldl (\a b->concat [a,"\n",b]) (acToDB ac) (map acToDB acs)
+
+rInt :: [String] -> [Int]
+rInt xs = map read xs
+                   
+--getIntArg :: [Int]
+getIntArg = fmap rInt getArgs
+
+main = do
+  xs <- getIntArg
+  writeFile "aircraftdb.csv" "A/C Type,Sched. Time,Actual Time,No. Pass.,Pass.,Ariv. Time\n"
+  appendFile "aircraftdb.csv" (acsToDB (take (xs!!1) . randACs $ xs!!0))
