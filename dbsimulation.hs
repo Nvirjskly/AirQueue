@@ -1,11 +1,11 @@
+module DBsimulation (Passenger, AirCraft, randACs, main) where
+
 import System.Random
 import System.Environment
 import Text.Printf
 
 data Passenger = Passenger {haveConnection :: Bool,
                             connectionTime :: Int} deriving(Show)
-
-data ACType = Int
 
 data AirCraft = AirCraft {aType :: Int,
                           scheduleTime :: Int,

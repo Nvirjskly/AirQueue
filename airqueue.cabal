@@ -1,0 +1,10 @@
+name:               airqueue
+version:            0.1.0.0
+build-type:         Simple
+cabal-version:      >=1.8
+
+executable DBsimulation.exe
+  hs-source-dirs:   ./
+  main-is:          DBsimulation.hs
+  ghc-options:      -O2 -threaded -with-rtsopts=-N -main-is DBsimulation
+  build-depends:    base, random

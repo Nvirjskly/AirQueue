@@ -1,0 +1,16 @@
+*~
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lol
+*.lot
+*.pdf
+*.gz
+*.toc
+*.exe
+*.hi
+*.o
+*.sty
+dist
