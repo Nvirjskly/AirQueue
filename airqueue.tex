@@ -11,9 +11,9 @@
 \usepackage{longtable}
 \usepackage[toc,page]{appendix}
 \usepackage{url}
-\usepackage{haskell}
 \usepackage{listings}
 \usepackage{placeins}
+\usepackage{hyperref}
 %\usepackage[notlot,notlof]{tocbibind}
 
 
@@ -49,6 +49,7 @@
 \newcommand{\myauthor}{Andrey A Popov}
 
 \renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\providecommand*{\lstnumberautorefname}{line} 
 
 \newsavebox{\smlmat}
 \savebox{\smlmat}{$\begin{bmatrix}0&1\end{bmatrix}^T$}
@@ -77,12 +78,21 @@ In the context of Aircraft queuing, we---using a simulation---optimise for sever
 \end{abstract}
 
 \section{Statement of Problem}
-The problem consists of constructing an optimal queuing algorithm for aircraft given an airport and a set of conditions
+The problem consists of constructing an optimal queuing algorithm for aircraft given an airport and a set of conditions.
 
 \section{Constructing of simulation}
-Using data obtained from the US Department of Transportation \cite{USDoTData} we try and construct a simulation that conforms as closely as possible to it.
 
-Using blah blah we get the following sample database:
+\subsection{Database Simulation}
+The database simulation construction is given in \autoref{lst:dbsim} in the appendix.
+
+Using data obtained from the US Department of Transportation \cite{USDoTData} we try and construct a simulation that conforms as closely as possible to it. 
+
+The simulation calls for there to be 7 different types of aircraft, each capable of carrying 100,150, \&c. up to 400. We then assume that there are  at least 10 people on the flight and that the amount of people is uniformly distributed, as we will factor the amount of people into our calculations thus accuracy in this respect is of little concern.
+We assume that each flight lasts exactly one hour and that the connection time has a mean of one hour from the scheduled arrival time and a mean of 15 minutes as seen in \autoref{lst:dbsim_pass} of \autoref{lst:dbsim}. By using the data in \autoref{tab:flightdata} we obtain that the mean departure time of an aircraft is $-4.932468$ minutes, (excluding data that do not have accurate departure statistics) with a mean of $25.5200688$ minutes. A random aircraft is thus obtained as described in \autoref{lst:dbsim_randac} of \autoref{lst:dbsim}.
+
+
+
+Using \autoref{lst:dbsim} we get the following sample database:
 
 \DTLloaddb[]{aircraftdb}{aircraftdb.csv}
 \begin{table}[h!]
@@ -110,7 +120,9 @@ lastfoot={}%
 
 \newpage
 \section{Code}
-\lstinputlisting[caption={dbsimulation.hs}]{dbsimulation.hs}
+\lstinputlisting[label={lst:dbsim},caption={dbsimulation.hs},escapeinside={--@}{@}]{dbsimulation.hs}
+\newpage
+\lstinputlisting[caption={air.hs}]{air.hs}
 
 \end{appendices}
 

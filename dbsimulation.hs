@@ -1,18 +1,18 @@
-module DBsimulation (Passenger, AirCraft, randACs, main) where
+module DBsimulation (Passenger(..), AirCraft(..), randACs, main) where
 
 import System.Random
 import System.Environment
 import Text.Printf
 
 data Passenger = Passenger {haveConnection :: Bool,
-                            connectionTime :: Int} deriving(Show)
+                            connectionTime :: Int} deriving(Show,Eq)
 
 data AirCraft = AirCraft {aType :: Int,
                           scheduleTime :: Int,
                           actualTime :: Int,
                           numPass :: Int,
                           passengers :: [Passenger],
-                          arrivalTime :: Int} deriving(Show)
+                          arrivalTime :: Int} deriving(Show,Eq)
 						  
 prng :: Random g => Int -> (g,g) -> [g]
 prng seed (a,b) =  randomRs (a, b) . mkStdGen $ seed
@@ -30,11 +30,11 @@ uniform seed = map (\(a,b)->a*b) $ zip (map (\(a,b)-> a) xys) ds
 --Random Passenger
 randPass :: Int -> Int -> Int -> Passenger
 randPass scht seed n = Passenger {haveConnection = (prng seed (0::Int,9)!!n)==0,
-                             connectionTime = scht+120+(floor (15*(uniform seed !! n)))}
+                             connectionTime = scht+120+(floor (15*(uniform seed !! n)))}--@\label{lst:dbsim_pass}@
 
 --Random A/C
 randAC :: Int -> Int -> AirCraft
-randAC seed n = AirCraft {aType = maxPass,
+randAC seed n = AirCraft {aType = maxPass, --@\label{lst:dbsim_randac}@
                       scheduleTime = randTime,
                       actualTime = randTime+(floor$meanDepart+(stdDepart*(uniform seed!!n))),
                       numPass = randNumPass,

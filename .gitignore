@@ -12,5 +12,6 @@
 *.exe
 *.hi
 *.o
+*.out
 *.sty
 dist
