@@ -30,11 +30,11 @@ uniform seed = map (\(a,b)->a*b) $ zip (map (\(a,b)-> a) xys) ds
 --Random Passenger
 randPass :: Int -> Int -> Int -> Passenger
 randPass scht seed n = Passenger {haveConnection = (prng seed (0::Int,9)!!n)==0,
-                             connectionTime = scht+120+(floor (15*(uniform seed !! n)))}--@\label{lst:dbsim_pass}@
+                             connectionTime = scht+120+(floor (15*(uniform seed !! n)))} -- @\label{lst:dbsim_pass}@
 
 --Random A/C
 randAC :: Int -> Int -> AirCraft
-randAC seed n = AirCraft {aType = maxPass, --@\label{lst:dbsim_randac}@
+randAC seed n = AirCraft {aType = maxPass, -- @\label{lst:dbsim_randac}@
                       scheduleTime = randTime,
                       actualTime = randTime+(floor$meanDepart+(stdDepart*(uniform seed!!n))),
                       numPass = randNumPass,
