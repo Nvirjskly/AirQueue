@@ -1,4 +1,4 @@
-module DBsimulation (Passenger(..), AirCraft(..), randACs, main) where
+module DBsimulation (Passenger(..), AirCraft(..), randACs, acToDB, main) where
 
 import System.Random
 import System.Environment
@@ -30,11 +30,11 @@ uniform seed = map (\(a,b)->a*b) $ zip (map (\(a,b)-> a) xys) ds
 --Random Passenger
 randPass :: Int -> Int -> Int -> Passenger
 randPass scht seed n = Passenger {haveConnection = (prng seed (0::Int,9)!!n)==0,
-                             connectionTime = scht+120+(floor (15*(uniform seed !! n)))} -- @\label{lst:dbsim_pass}@
+                             connectionTime = scht+120+(floor (15*(uniform seed !! n)))} --l@\label{lst:dbsim_pass}@
 
 --Random A/C
 randAC :: Int -> Int -> AirCraft
-randAC seed n = AirCraft {aType = maxPass, -- @\label{lst:dbsim_randac}@
+randAC seed n = AirCraft {aType = maxPass, --l@\label{lst:dbsim_randac}@
                       scheduleTime = randTime,
                       actualTime = randTime+(floor$meanDepart+(stdDepart*(uniform seed!!n))),
                       numPass = randNumPass,
@@ -72,7 +72,12 @@ rInt xs = map read xs
 --getIntArg :: [Int]
 getIntArg = fmap rInt getArgs
 
+rndSeed :: IO Int
+rndSeed = getStdRandom (randomR (1,maxBound::Int))
+
 main = do
   xs <- getIntArg
+  seed <- rndSeed
   writeFile "aircraftdb.csv" "A/C Type,Sched. Time,Actual Time,No. Pass.,Pass.,Ariv. Time\n"
-  appendFile "aircraftdb.csv" (acsToDB (take (xs!!1) . randACs $ xs!!0))
+  appendFile "aircraftdb.csv" ((acsToDB.(take (xs!!0) . randACs )) seed)
+  --appendFile "aircraftdb.csv" (acsToDB (take (xs!!1) . randACs $ xs!!0))

@@ -16,6 +16,8 @@ queueNumpass q = quickSort numpass q
 eliminate :: Maybe a -> a
 eliminate (Just a) = a
 
+----l@Here we prepare the simulation state data structure.@
+
 data SimulationState = SimulationState {step :: Int,
                                         qFun :: ([AirCraft] -> [AirCraft]),
                                         db :: [AirCraft],
@@ -31,20 +33,21 @@ simStep SimulationState {step = s,
                          queue = q,
                          acOnRunway = r,
                          lastTakeOff = t}
-  = SimulationState {step = s+1,
+  = SimulationState {step = ns,
                      qFun = f,
                      db = newdb,
-                     queue = takeoff newqueue,
-                     acOnRunway = if (s+1)==lastt then Just (head addqueue) else Nothing,
+                     queue = newqueue,
+                     acOnRunway = if ns==lastt then Just (head addqueue) else Nothing,
                      lastTakeOff = lastt}
     where
-      acatstep = (filter (\x->(s+1)==(actualT x)) d)
-      newdb = (filter (\x->(not ((s+1)==(actualT x)))) d)
+      ns = s+1
+      acatstep = (filter (\x -> ns == (actualT x)) d)
+      newdb = (filter (\x -> ns /= (actualT x)) d)
       addqueue = f (acatstep ++ q)
-      newqueue = if (s+1)>=(t+5) then takeoff addqueue else addqueue
+      newqueue = if ns==lastt then takeoff addqueue else addqueue
       takeoff [] = []
       takeoff (x:xs) = xs
-      lastt = if (s>=(t+5))&&((length addqueue)>0) then s+1 else t
+      lastt = if (ns>=(t+5))&&(not.null$addqueue) then ns else t
 
 initSim f = SimulationState {step = (head (quickSort id (map actualT getdb)))-1,
                              qFun = f,
@@ -54,15 +57,11 @@ initSim f = SimulationState {step = (head (quickSort id (map actualT getdb)))-1,
                              lastTakeOff = -15}
 
 finalSim :: SimulationState -> Bool
-finalSim SimulationState {step = s,
-                         qFun = f,
-                         db = d,
-                         queue = q,
-                         acOnRunway = r,
-                         lastTakeOff = t}
+finalSim SimulationState {db = d,
+                         queue = q}
   = if (null d)&&(null q) then True else False
 
-getdb = quickSort numpass (take 550 (randACs 5))
+getdb = quickSort numpass (take 288 (randACs 5))
 
 simEnumR :: SimulationState -> [SimulationState]
 simEnumR s = if (finalSim s)
@@ -84,18 +83,17 @@ actualT AirCraft {aType=ac1,scheduleTime=ac2,
                  passengers=ac5,arrivalTime=ac6}
   = ac3
 
+schT :: AirCraft -> Int
+schT AirCraft {scheduleTime=ac2}
+  = ac2  
+
 acOnRW :: SimulationState -> (Maybe AirCraft, Int)
-acOnRW SimulationState {step = s,
-                         qFun = f,
-                         db = d,
-                         queue = q,
-                         acOnRunway = r,
+acOnRW SimulationState {acOnRunway = r,
                          lastTakeOff = t}
   = (r,t)
 
---quickSort
---cf: comparison function
---xs: list
+----l@This is a standard implementation of quicksort@
+----l@such that $q(xs)_{cf} = qs\left(\right)$@
 quickSort :: Ord b => (a -> b) -> [a] -> [a]
 quickSort cf [] = []
 quickSort cf (p:xs) = quickSort cf [x | x<-xs, (cf x)< (cf p)] ++ [p] ++
@@ -103,7 +101,7 @@ quickSort cf (p:xs) = quickSort cf [x | x<-xs, (cf x)< (cf p)] ++ [p] ++
 
 join :: String -> [String] -> String
 join d [] = ""
-join d (a:as) = foldl (\x y -> x++d++y) a as
+join d (a:as) = foldl' (\x y -> x++d++y) a as
 
 simToStr :: SimulationState -> String
 simToStr SimulationState {step = s,
@@ -117,4 +115,4 @@ acs = map (\(a,b) -> (fromJust a,b))
       (filter (\(a,b) -> isJust a) (map acOnRW (simEnum queueNumpass)))
 
 main = do
-  writeFile "testrr.out" (join "\n" (map (show.(\(a,b)->(numpass a,b))) acs))
+  writeFile "testrr.out" (join "\n" (map (show.(\(a,b)->(acToDB a,b-(actualT a),b))) acs))
