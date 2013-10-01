@@ -3,18 +3,13 @@ import System.Random
 import Text.Printf
 import Data.List
 import Data.Maybe
+import Graphics.Gnuplot.Simple
 
 --queueAdd :: Ord b => (a -> b) -> [a] -> [a] -> [a]
 
 --queueAdd f x q = quickSort f (x ++ q)
 
-queueNumpass q = quickSort numpass q
-
---data ACQueue = ACQueue {q :: [AirCraft]}
---               deriving (Show)
-
-eliminate :: Maybe a -> a
-eliminate (Just a) = a
+queueNumpass q = reverse $ quickSort numpass q
 
 ----l@Here we prepare the simulation state data structure.@
 
@@ -24,7 +19,6 @@ data SimulationState = SimulationState {step :: Int,
                                         queue :: [AirCraft],
                                         acOnRunway :: Maybe AirCraft,
                                         lastTakeOff :: Int}
-                       --deriving (Show)
 
 simStep :: SimulationState -> SimulationState
 simStep SimulationState {step = s,
@@ -41,13 +35,14 @@ simStep SimulationState {step = s,
                      lastTakeOff = lastt}
     where
       ns = s+1
+      p = 3
       acatstep = (filter (\x -> ns == (actualT x)) d)
       newdb = (filter (\x -> ns /= (actualT x)) d)
       addqueue = f (acatstep ++ q)
       newqueue = if ns==lastt then takeoff addqueue else addqueue
       takeoff [] = []
       takeoff (x:xs) = xs
-      lastt = if (ns>=(t+5))&&(not.null$addqueue) then ns else t
+      lastt = if (ns>=(t+p))&&(not.null$addqueue) then ns else t
 
 initSim f = SimulationState {step = (head (quickSort id (map actualT getdb)))-1,
                              qFun = f,
@@ -72,15 +67,11 @@ simEnum :: ([AirCraft] -> [AirCraft]) -> [SimulationState]
 simEnum f = simEnumR (initSim f)
 
 numpass :: AirCraft -> Int
-numpass AirCraft {aType=ac1,scheduleTime=ac2,
-                 actualTime=ac3,numPass=ac4,
-                 passengers=ac5,arrivalTime=ac6}
+numpass AirCraft {numPass=ac4}
   = ac4
 
 actualT :: AirCraft -> Int
-actualT AirCraft {aType=ac1,scheduleTime=ac2,
-                 actualTime=ac3,numPass=ac4,
-                 passengers=ac5,arrivalTime=ac6}
+actualT AirCraft {actualTime=ac3}
   = ac3
 
 schT :: AirCraft -> Int
@@ -93,13 +84,13 @@ acOnRW SimulationState {acOnRunway = r,
   = (r,t)
 
 ----l@This is a standard implementation of quicksort@
-----l@such that $q(xs)_{cf} = qs\left(\right)$@
+----l@such that $q(xs)_{cf} = qs\left([x|x\in xs, cf(x)<cf(p)]\right)$@
 quickSort :: Ord b => (a -> b) -> [a] -> [a]
 quickSort cf [] = []
-quickSort cf (p:xs) = quickSort cf [x | x<-xs, (cf x)< (cf p)] ++ [p] ++
+quickSort cf (p:xs) = quickSort cf [x | x<-xs, (cf x)<(cf p)] ++ [p] ++
                       quickSort cf [x | x<-xs, (cf x)>=(cf p)]
 
-join :: String -> [String] -> String
+join :: String -> [String] -> String 
 join d [] = ""
 join d (a:as) = foldl' (\x y -> x++d++y) a as
 
@@ -114,5 +105,14 @@ simToStr SimulationState {step = s,
 acs = map (\(a,b) -> (fromJust a,b))
       (filter (\(a,b) -> isJust a) (map acOnRW (simEnum queueNumpass)))
 
+ind :: Int -> Int -> Float
+ind a b = (fromIntegral a)/(fromIntegral b)
+
+--perpass :: [(Int, Float)]
+perpass = (map (\(a,b)->(b,ind (b-(actualT a)) (numpass a)) ) acs)
+
 main = do
-  writeFile "testrr.out" (join "\n" (map (show.(\(a,b)->(acToDB a,b-(actualT a),b))) acs))
+  plotListStyle [EPS "test.eps",XLabel "Time of takeoff", YLabel "Time waiting in queue"] (defaultStyle{plotType = Points}) (map (\(a,b)->(b,(b-(actualT a))) ) acs)
+  plotListStyle [PNG "test2.png",XLabel "Time of takeoff", YLabel "Time waiting in queue"] (defaultStyle{plotType = Points}) perpass
+  writeFile "tt.csv" (join "\n" (map (\(a,b)->(show b)++","++(show (b-(actualT a)))) acs))
+  writeFile "testrr.out" (join "\n" (map (show.(\(a,b)->(acToDB a,b-(actualT a),toTime b))) acs))

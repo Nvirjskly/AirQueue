@@ -15,4 +15,4 @@ executable airqueue.exe
   hs-source-dirs:   ./
   main-is:          air.hs
   ghc-options:      -O2 -threaded -with-rtsopts=-N
-  build-depends:    base, random
+  build-depends:    base, random, gnuplot

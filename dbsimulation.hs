@@ -1,4 +1,4 @@
-module DBsimulation (Passenger(..), AirCraft(..), randACs, acToDB, main) where
+module DBsimulation (Passenger(..), AirCraft(..), randACs, acToDB, toTime, main) where
 
 import System.Random
 import System.Environment
@@ -43,7 +43,7 @@ randAC seed n = AirCraft {aType = maxPass, --l@\label{lst:dbsim_randac}@
                 where
                   maxPass = 50 + (50 * ((prng seed (1,7))!! n))
                   randNumPass = prng seed (10,maxPass) !! n
-                  randTime = prng seed (180,1260) !! n
+                  randTime = prng seed (60,1380) !! n
                   stdDepart = 25.5200688 --Standard Deviation of departure
                   meanDepart = -4.932468
                   randPassengers = map (\x->randPass randTime seed x) [0..]
