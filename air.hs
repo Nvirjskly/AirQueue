@@ -56,7 +56,7 @@ finalSim SimulationState {db = d,
                          queue = q}
   = if (null d)&&(null q) then True else False
 
-getdb = quickSort numpass (take 288 (randACs 5))
+getdb = quickSort numpass (take 200 (randACs 5))
 
 simEnumR :: SimulationState -> [SimulationState]
 simEnumR s = if (finalSim s)
@@ -102,17 +102,42 @@ simToStr SimulationState {step = s,
                          lastTakeOff = t}
   = join "," (map (show.numpass) q)
 
+acs :: [(AirCraft,Int)]
 acs = map (\(a,b) -> (fromJust a,b))
       (filter (\(a,b) -> isJust a) (map acOnRW (simEnum queueNumpass)))
 
 ind :: Int -> Int -> Float
 ind a b = (fromIntegral a)/(fromIntegral b)
 
+hasConn Passenger{haveConnection = b} = b
+
 --perpass :: [(Int, Float)]
 perpass = (map (\(a,b)->(b,ind (b-(actualT a)) (numpass a)) ) acs)
 
+ps :: AirCraft -> [Passenger]
+ps AirCraft {passengers = p} = p
+
+tlbp :: Passenger -> Int -> Int
+tlbp Passenger {haveConnection = b,
+                connectionTime = t} at
+  = if b then at - t
+      else 0
+
+
+timePassLateBy :: AirCraft -> Int -> Int
+timePassLateBy ac to = sum lates
+  where
+  lates = filter (\p -> p >= 0) (map (\p -> tlbp p (to+60)) $ ps ac)
+
+percConLate :: AirCraft -> Int -> Float
+percConLate ac to = ind (length late) (length hc) where
+  hc = filter hasConn (ps ac)
+  late = filter (\p->(tlbp p (to+60))>0) hc
+
 main = do
-  plotListStyle [EPS "test.eps",XLabel "Time of takeoff", YLabel "Time waiting in queue"] (defaultStyle{plotType = Points}) (map (\(a,b)->(b,(b-(actualT a))) ) acs)
-  plotListStyle [PNG "test2.png",XLabel "Time of takeoff", YLabel "Time waiting in queue"] (defaultStyle{plotType = Points}) perpass
-  writeFile "tt.csv" (join "\n" (map (\(a,b)->(show b)++","++(show (b-(actualT a)))) acs))
-  writeFile "testrr.out" (join "\n" (map (show.(\(a,b)->(acToDB a,b-(actualT a),toTime b))) acs))
+  plotListStyle [EPS "test.eps",XLabel "Time of takeoff", YLabel "Time waiting in queue", Key Nothing] (defaultStyle{plotType = Points}) (map (\(a,b)->(b,(b-(actualT a))) ) acs)
+  plotListStyle [EPS "test2.eps",XLabel "Time of takeoff", YLabel "Time waiting in queue/numpass", Key Nothing] (defaultStyle{plotType = Points}) perpass
+  plotListStyle [EPS "test3.eps",XLabel "Time of takeoff", YLabel "Sum of Time Passengers late to connection", Key Nothing] (defaultStyle{plotType = Points}) (map (\(a,b)->(b,timePassLateBy a b)) acs)
+  plotListStyle [EPS "test4.eps",XLabel "Time of takeoff", YLabel "Percent late", Key Nothing] (defaultStyle{plotType = Points}) (map (\(a,b)->(b,percConLate a b)) acs)
+  --writeFile "tt.csv" (join "\n" (map (\(a,b)->(show b)++","++(show (b-(actualT a)))) acs))
+  --writeFile "testrr.out" (join "\n" (map (show.(\(a,b)->(acToDB a,b-(actualT a),toTime b))) acs))
